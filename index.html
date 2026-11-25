@@ -60,6 +60,7 @@ ul.pts li span.j{font-family:var(--jp)}
 .player{position:fixed;z-index:50;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(400px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(20,10,30,.28);padding:8px;display:flex;flex-direction:column;gap:6px;transition:transform .2s ease,opacity .2s ease}
 .player.off{transform:translateY(calc(100% + 40px));opacity:0;pointer-events:none}
 .phead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.yapp{margin-left:auto;color:var(--accent);font-size:.85rem}
 .xbtn{font:inherit;border:0;background:var(--accent-soft);color:var(--fg);width:30px;height:30px;border-radius:8px;cursor:pointer;flex:none}
 .wrap{padding-bottom:max(64px,calc(min(400px,100vw - 32px) * 0.5625 + 120px))}
 .frame{width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}
@@ -104,6 +105,7 @@ ul.pts li span.j{font-family:var(--jp)}
       <label for="speed">속도</label>
       <select id="speed"><option value="1">1배</option><option value="0.75" selected>0.75배</option><option value="0.5">0.5배</option></select>
       <button class="xbtn" id="preplay" aria-label="다시 듣기" title="다시 듣기">↺</button>
+      <a id="papp" class="yapp" href="#" target="_blank" rel="noopener">YouTube 앱에서 보기</a>
     </div>
   </div>
 
@@ -151,6 +153,7 @@ function playSeg(it,btn,lp){
   document.getElementById("now").innerHTML='재생 중: <span class="now">'+(it.who||"")+' · '+fmt(it.t)+'</span>'+(loop?' (반복)':'');
   start(seg);
   document.getElementById("player").classList.remove("off");
+  document.getElementById("papp").href="https://youtu.be/"+seg.vid+"?t="+seg.t;
 }
 document.getElementById("pclose").onclick=()=>{loop=false;document.querySelectorAll(".loop").forEach(b=>{b.classList.remove("on");b.setAttribute("aria-pressed","false")});try{player.pauseVideo()}catch(_){}document.getElementById("player").classList.add("off")};
 document.getElementById("preplay").onclick=()=>{if(seg&&ready)start(seg)};
