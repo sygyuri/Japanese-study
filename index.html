@@ -70,7 +70,7 @@ ul.pts li span.j{font-family:var(--jp)}
 .btn.on{background:var(--accent);color:var(--accent-fg)}
 .jp ruby{cursor:pointer;border-radius:4px}
 .jp ruby:hover{background:var(--accent-soft)}
-.kpop{position:absolute;z-index:60;width:min(360px,calc(100vw - 32px));background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(20,10,30,.25);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.kpop{position:fixed;z-index:60;width:min(360px,calc(100vw - 32px));background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(20,10,30,.25);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
 .kpop .kh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .kpop .kw{font-family:var(--jp);font-size:1.6rem;font-weight:700}
 .kpop .kr{color:var(--muted);font-family:"Noto Sans JP",sans-serif}
@@ -212,7 +212,7 @@ function render(di){
 const isK=c=>/[一-鿿々]/.test(c);
 let kp=null;
 function closeK(){if(kp){kp.remove();kp=null}}
-function showK(rubies,item,anchorRect){
+function showK(rubies,item){
   closeK();
   const word=rubies.map(r=>r.firstChild.textContent).join("");
   const read=rubies.map(r=>r.querySelector("rt").textContent).join("");
@@ -226,8 +226,10 @@ function showK(rubies,item,anchorRect){
   kp.querySelector(".ksay").onclick=e=>{e.stopPropagation();say(reading,0.8)};
   document.body.appendChild(kp);
   const W=kp.offsetWidth,H=kp.offsetHeight;
-  let left=anchorRect.left+scrollX;left=Math.max(scrollX+16,Math.min(left,scrollX+innerWidth-W-16));
-  let top=anchorRect.bottom+scrollY+8;if(anchorRect.bottom+H+8>innerHeight&&anchorRect.top>H+8)top=anchorRect.top+scrollY-H-8;
+  const a=rubies[0].getBoundingClientRect(),b=rubies[rubies.length-1].getBoundingClientRect();
+  const vw=document.documentElement.clientWidth,vh=window.innerHeight;
+  let left=Math.max(16,Math.min(a.left,vw-W-16));
+  let top=b.bottom+8;if(top+H>vh-8&&a.top-H-8>8)top=a.top-H-8;top=Math.max(8,Math.min(top,vh-H-8));
   kp.style.left=left+"px";kp.style.top=top+"px";
 }
 function itemOf(el){const c=el.closest(".card");if(!c)return null;const i=[...document.querySelectorAll("#days .card")].indexOf(c);return DAYS[cur].items[i]}
@@ -237,11 +239,12 @@ function onSel(){
   if(!jp)return false;
   const rubies=[...jp.querySelectorAll("ruby")].filter(x=>r.intersectsNode(x));
   if(!rubies.length)return false;
-  showK(rubies,itemOf(jp),r.getBoundingClientRect());return true;
+  showK(rubies,itemOf(jp));return true;
 }
-document.addEventListener("mouseup",e=>{if(kp&&kp.contains(e.target))return;setTimeout(()=>{if(!onSel()){const rb=e.target.closest&&e.target.closest(".jp ruby");if(rb)showK([rb],itemOf(rb),rb.getBoundingClientRect());else closeK()}},10)});
+document.addEventListener("mouseup",e=>{if(kp&&kp.contains(e.target))return;setTimeout(()=>{if(!onSel()){const rb=e.target.closest&&e.target.closest(".jp ruby");if(rb)showK([rb],itemOf(rb));else closeK()}},10)});
 document.addEventListener("touchend",e=>{if(kp&&kp.contains(e.target))return;setTimeout(onSel,350)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeK()});
+window.addEventListener("scroll",()=>closeK(),{passive:true});
 const tabs=document.getElementById("tabs");
 DAYS.forEach((d,i)=>{const b=document.createElement("button");b.textContent=d.label;b.onclick=()=>render(i);tabs.appendChild(b)});
 render(DAYS.length-1);
