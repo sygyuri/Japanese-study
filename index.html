@@ -57,14 +57,17 @@ ul.pts li span.j{font-family:var(--jp)}
 .done{display:flex;align-items:center;gap:8px;font-size:.92rem;color:var(--muted)}
 .note{font-size:.85rem;color:var(--muted)}
 #ttsWarn{background:var(--hint-soft);border-radius:10px;padding:10px 12px;font-size:.9rem}
-.player{position:sticky;top:0;z-index:5;background:var(--bg);padding-block:10px;display:flex;flex-direction:column;gap:8px}
-.frame{width:100%;max-width:480px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.player{position:fixed;z-index:50;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(400px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(20,10,30,.28);padding:8px;display:flex;flex-direction:column;gap:6px;transition:transform .2s ease,opacity .2s ease}
+.player.off{transform:translateY(calc(100% + 40px));opacity:0;pointer-events:none}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.xbtn{font:inherit;border:0;background:var(--accent-soft);color:var(--fg);width:30px;height:30px;border-radius:8px;cursor:pointer;flex:none}
+.wrap{padding-bottom:max(64px,calc(min(400px,100vw - 32px) * 0.5625 + 120px))}
+.frame{width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}
 .frame iframe,.frame>div{width:100%;height:100%;border:0;display:block}
 .pctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.88rem;color:var(--muted)}
 .pctl select{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:4px 8px}
 .now{font-weight:500;color:var(--accent)}
 .btn.on{background:var(--accent);color:var(--accent-fg)}
-@media (max-width:520px){.frame{max-width:100%}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <style>body{margin:0}</style>
@@ -73,15 +76,19 @@ ul.pts li span.j{font-family:var(--jp)}
 <div class="wrap">
   <header>
     <h1>오늘의 일본어 문장</h1>
-    <p>추천 영상에서 고른 초급용 하루 3문장. ▶ 버튼을 누르면 위 영상에서 그 문장 구간만 재생되고 멈춰요.</p>
+    <p>추천 영상에서 고른 초급용 하루 3문장. ▶ 버튼을 누르면 화면 오른쪽 아래에 작은 영상 창이 떠서 그 문장 구간만 재생돼요.</p>
   </header>
 
-  <div class="player">
+  <div class="player off" id="player" aria-label="영상 구간 플레이어">
+    <div class="phead pctl">
+      <span id="now">문장의 ▶ 버튼을 눌러 보세요</span>
+      <button class="xbtn" id="pclose" aria-label="영상 닫기">✕</button>
+    </div>
     <div class="frame"><div id="yt"></div></div>
     <div class="pctl">
       <label for="speed">속도</label>
       <select id="speed"><option value="1">1배</option><option value="0.75" selected>0.75배</option><option value="0.5">0.5배</option></select>
-      <span id="now">문장의 ▶ 버튼을 눌러 보세요</span>
+      <button class="xbtn" id="preplay" aria-label="다시 듣기" title="다시 듣기">↺</button>
     </div>
   </div>
 
@@ -127,8 +134,10 @@ function playSeg(it,btn,lp){
   if(loop&&btn){btn.classList.add("on");btn.setAttribute("aria-pressed","true")}
   document.getElementById("now").innerHTML='재생 중: <span class="now">'+(it.who||"")+' · '+fmt(it.t)+'</span>'+(loop?' (반복)':'');
   start(seg);
-  try{window.scrollTo({top:0,behavior:"smooth"})}catch(e){}
+  document.getElementById("player").classList.remove("off");
 }
+document.getElementById("pclose").onclick=()=>{loop=false;document.querySelectorAll(".loop").forEach(b=>{b.classList.remove("on");b.setAttribute("aria-pressed","false")});try{player.pauseVideo()}catch(_){}document.getElementById("player").classList.add("off")};
+document.getElementById("preplay").onclick=()=>{if(seg&&ready)start(seg)};
 document.getElementById("speed").onchange=e=>{try{player&&player.setPlaybackRate(parseFloat(e.target.value))}catch(_){}};
 
 let jaVoice=null;
