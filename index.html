@@ -68,6 +68,21 @@ ul.pts li span.j{font-family:var(--jp)}
 .pctl select{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:4px 8px}
 .now{font-weight:500;color:var(--accent)}
 .btn.on{background:var(--accent);color:var(--accent-fg)}
+.jp ruby{cursor:pointer;border-radius:4px}
+.jp ruby:hover{background:var(--accent-soft)}
+.kpop{position:absolute;z-index:60;width:min(360px,calc(100vw - 32px));background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(20,10,30,.25);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.kpop .kh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.kpop .kw{font-family:var(--jp);font-size:1.6rem;font-weight:700}
+.kpop .kr{color:var(--muted);font-family:"Noto Sans JP",sans-serif}
+.kpop .km{font-weight:500}
+.kpop .ksay{margin-left:auto;font:inherit;border:0;background:var(--accent-soft);color:var(--fg);border-radius:8px;padding:4px 8px;cursor:pointer}
+.kpop table{border-collapse:collapse;width:100%;font-size:.88rem}
+.kpop td{padding:5px 4px;border-top:1px solid var(--line);vertical-align:middle}
+.kpop td.c{font-family:var(--jp);font-size:1.35rem;width:2.2rem}
+.kpop td.h{white-space:nowrap}
+.kpop .lv{display:inline-block;font-size:.72rem;font-weight:700;border-radius:6px;padding:1px 6px;background:var(--hint-soft);color:var(--hint)}
+.kpop .lv.N1,.kpop .lv.N2{background:var(--accent-soft);color:var(--accent)}
+.kpop td.rd{color:var(--muted);font-family:"Noto Sans JP",sans-serif;font-size:.8rem}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <style>body{margin:0}</style>
@@ -106,10 +121,11 @@ ul.pts li span.j{font-family:var(--jp)}
 
   <div class="tabs" role="group" aria-label="날짜 선택" id="tabs"></div>
   <div id="days"></div>
-  <p class="note">문장은 영상 자막을 바탕으로 정리했어요. 말할 때 생략되거나 겹친 부분은 알기 쉽게 다듬었으니 실제 소리와 조금 다를 수 있어요.</p>
+  <p class="note">모르는 한자는 문장에서 드래그하거나 톡 누르면 뜻과 읽기가 떠요. 문장은 영상 자막을 바탕으로 정리했어요. 말할 때 생략되거나 겹친 부분은 알기 쉽게 다듬었으니 실제 소리와 조금 다를 수 있어요.</p>
 </div>
 
 <script src="days.js"></script>
+<script src="kanji.js"></script>
 <script>
 function rubyHTML(s){return s.replace(/\[([^|\]]+)\|([^\]]+)\]/g,'<ruby>$1<rt>$2</rt></ruby>')}
 function kana(s){return s.replace(/\[([^|\]]+)\|([^\]]+)\]/g,'$2')}
@@ -156,7 +172,9 @@ function say(text,rate,btn){
 }
 function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
 
+let cur=0;
 function render(di){
+  cur=di;closeK&&closeK();
   const box=document.getElementById("days");box.innerHTML="";
   DAYS[di].items.forEach((it,i)=>{
     const id=`d${di}s${i}`;
@@ -189,6 +207,41 @@ function render(di){
   });
   document.querySelectorAll("#tabs button").forEach((b,i)=>b.setAttribute("aria-pressed",i===di?"true":"false"));
 }
+
+/* Kanji popup: drag over kanji in a sentence, or tap one */
+const isK=c=>/[一-鿿々]/.test(c);
+let kp=null;
+function closeK(){if(kp){kp.remove();kp=null}}
+function showK(rubies,item,anchorRect){
+  closeK();
+  const word=rubies.map(r=>r.firstChild.textContent).join("");
+  const read=rubies.map(r=>r.querySelector("rt").textContent).join("");
+  let mean="",reading=read;
+  const w=(item.words||[]).find(x=>x[0]===word)||(item.words||[]).find(x=>x[0].startsWith(word)&&!isK(x[0][word.length]||""));
+  if(w){mean=w[2];if(w[0]!==word){mean=w[0]+": "+w[2]}}
+  else if(VOCAB[word]){mean=VOCAB[word][1]}
+  const rows=[...word].filter(isK).map(c=>{const k=KANJI[c];return k?`<tr><td class="c">${c}</td><td class="h">${k[0]}</td><td><span class="lv ${k[1]}">${k[1]}</span></td><td class="rd">${k[2]} / ${k[3]}</td></tr>`:`<tr><td class="c">${c}</td><td colspan="3" class="rd">아직 사전에 없는 한자예요</td></tr>`}).join("");
+  kp=document.createElement("div");kp.className="kpop";kp.setAttribute("role","dialog");
+  kp.innerHTML=`<div class="kh"><span class="kw" lang="ja">${word}</span><span class="kr">${reading}</span><button class="ksay" aria-label="읽기 듣기">🔊</button></div>${mean?`<div class="km">${mean}</div>`:""}<table>${rows}</table>`;
+  kp.querySelector(".ksay").onclick=e=>{e.stopPropagation();say(reading,0.8)};
+  document.body.appendChild(kp);
+  const W=kp.offsetWidth,H=kp.offsetHeight;
+  let left=anchorRect.left+scrollX;left=Math.max(scrollX+16,Math.min(left,scrollX+innerWidth-W-16));
+  let top=anchorRect.bottom+scrollY+8;if(anchorRect.bottom+H+8>innerHeight&&anchorRect.top>H+8)top=anchorRect.top+scrollY-H-8;
+  kp.style.left=left+"px";kp.style.top=top+"px";
+}
+function itemOf(el){const c=el.closest(".card");if(!c)return null;const i=[...document.querySelectorAll("#days .card")].indexOf(c);return DAYS[cur].items[i]}
+function onSel(){
+  const sel=getSelection();if(!sel||sel.isCollapsed||!sel.rangeCount)return false;
+  const r=sel.getRangeAt(0);const jp=(r.commonAncestorContainer.nodeType===1?r.commonAncestorContainer:r.commonAncestorContainer.parentElement).closest(".jp");
+  if(!jp)return false;
+  const rubies=[...jp.querySelectorAll("ruby")].filter(x=>r.intersectsNode(x));
+  if(!rubies.length)return false;
+  showK(rubies,itemOf(jp),r.getBoundingClientRect());return true;
+}
+document.addEventListener("mouseup",e=>{if(kp&&kp.contains(e.target))return;setTimeout(()=>{if(!onSel()){const rb=e.target.closest&&e.target.closest(".jp ruby");if(rb)showK([rb],itemOf(rb),rb.getBoundingClientRect());else closeK()}},10)});
+document.addEventListener("touchend",e=>{if(kp&&kp.contains(e.target))return;setTimeout(onSel,350)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeK()});
 const tabs=document.getElementById("tabs");
 DAYS.forEach((d,i)=>{const b=document.createElement("button");b.textContent=d.label;b.onclick=()=>render(i);tabs.appendChild(b)});
 render(DAYS.length-1);
