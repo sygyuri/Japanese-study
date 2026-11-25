@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>오늘의 일본어 문장</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+JP:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow study column; each sentence is a card with listen controls on top, notes below */
+:root{
+  --bg:#fbf8fc; --surface:#ffffff; --fg:#2a2433; --muted:#6f6680; --line:#e8e0ef;
+  --accent:#b0478a; --accent-soft:#f6e6f0; --accent-fg:#ffffff; --hint:#3d6f9a; --hint-soft:#e7f0f8;
+  --jp:"Zen Maru Gothic","Noto Sans JP",system-ui,sans-serif;
+  --kr:"Noto Sans KR",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17131c; --surface:#211b28; --fg:#efe9f5; --muted:#a99fb8; --line:#352d40;
+  --accent:#e58bc0; --accent-soft:#3a2333; --accent-fg:#1b1220; --hint:#8fc0e8; --hint-soft:#1d2a36; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17131c; --surface:#211b28; --fg:#efe9f5; --muted:#a99fb8; --line:#352d40;
+  --accent:#e58bc0; --accent-soft:#3a2333; --accent-fg:#1b1220; --hint:#8fc0e8; --hint-soft:#1d2a36; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--kr);font-size:15px;line-height:1.65}
+.wrap{max-width:720px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+header h1{font-family:var(--jp);font-size:1.7rem;margin:0;text-wrap:balance}
+header p{margin:.3rem 0 0;color:var(--muted)}
+.src{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:.9rem;color:var(--muted)}
+.src a{color:var(--accent)}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:.92rem}
+.plan b{color:var(--accent)}
+.plan ol{margin:.3rem 0 0;padding-left:1.2rem}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:6px 14px;border-radius:999px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.meta .who{font-weight:700;color:var(--accent);letter-spacing:.02em}
+.jp{font-family:var(--jp);font-size:1.45rem;line-height:2.3;font-weight:500;margin:0}
+.jp rt{font-family:"Noto Sans JP",sans-serif;font-size:.5em;color:var(--accent);font-weight:400}
+.pron{margin:0;color:var(--muted);font-size:.95rem}
+.ko{margin:0;font-weight:500}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:.9rem;display:inline-flex;align-items:center;gap:6px;border-radius:10px;padding:8px 13px;cursor:pointer;text-decoration:none;border:1px solid var(--accent);background:var(--accent);color:var(--accent-fg)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:focus-visible,.tabs button:focus-visible,.w:focus-visible{outline:3px solid var(--hint);outline-offset:2px}
+.btn.playing{filter:brightness(1.1);box-shadow:0 0 0 3px var(--accent-soft)}
+h3{margin:0;font-size:.8rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.w{font:inherit;text-align:left;background:var(--accent-soft);border:0;border-radius:10px;padding:8px 10px;cursor:pointer;color:var(--fg)}
+.w .k{font-family:var(--jp);font-size:1.05rem;display:block}
+.w .r{font-size:.78rem;color:var(--muted)}
+.w .m{font-size:.85rem;display:block}
+ul.pts{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:6px}
+ul.pts li span.j{font-family:var(--jp)}
+.tip{background:var(--hint-soft);color:var(--fg);border-radius:10px;padding:10px 12px;font-size:.9rem}
+.tip b{color:var(--hint)}
+.done{display:flex;align-items:center;gap:8px;font-size:.92rem;color:var(--muted)}
+.note{font-size:.85rem;color:var(--muted)}
+#ttsWarn{background:var(--hint-soft);border-radius:10px;padding:10px 12px;font-size:.9rem}
+.player{position:sticky;top:0;z-index:5;background:var(--bg);padding-block:10px;display:flex;flex-direction:column;gap:8px}
+.frame{width:100%;max-width:480px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.frame iframe,.frame>div{width:100%;height:100%;border:0;display:block}
+.pctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.88rem;color:var(--muted)}
+.pctl select{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:4px 8px}
+.now{font-weight:500;color:var(--accent)}
+.btn.on{background:var(--accent);color:var(--accent-fg)}
+@media (max-width:520px){.frame{max-width:100%}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>body{margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>오늘의 일본어 문장</h1>
+    <p>추천 영상에서 고른 초급용 하루 3문장. ▶ 버튼을 누르면 위 영상에서 그 문장 구간만 재생되고 멈춰요.</p>
+  </header>
+
+  <div class="player">
+    <div class="frame"><div id="yt"></div></div>
+    <div class="pctl">
+      <label for="speed">속도</label>
+      <select id="speed"><option value="1">1배</option><option value="0.75" selected>0.75배</option><option value="0.5">0.5배</option></select>
+      <span id="now">문장의 ▶ 버튼을 눌러 보세요</span>
+    </div>
+  </div>
+
+  <div class="plan">
+    <b>하루 루틴 (40~50분)</b>
+    <ol>
+      <li>▶ 구간 재생을 자막 보지 않고 2번 듣기 (뭐라고 하는지 추측)</li>
+      <li>문장·후리가나·뜻 보면서 🔊 느리게 → 보통 속도로 따라 읽기</li>
+      <li>이 문장을 수업 채팅에 붙여넣고 문제 풀기 (한 문장에 약 15분)</li>
+      <li>🔁 반복을 켜고 영상과 같이 말하기 (쉐도잉)</li>
+    </ol>
+  </div>
+
+  <div id="ttsWarn" hidden>이 기기에서 일본어 음성을 찾지 못했어요. 🔊 버튼이 조용하면 ▶ 구간 재생을 써 주세요.</div>
+
+  <div class="tabs" role="group" aria-label="날짜 선택" id="tabs"></div>
+  <div id="days"></div>
+  <p class="note">문장은 영상 자막을 바탕으로 정리했어요. 말할 때 생략되거나 겹친 부분은 알기 쉽게 다듬었으니 실제 소리와 조금 다를 수 있어요.</p>
+</div>
+
+<script src="days.js"></script>
+<script>
+function rubyHTML(s){return s.replace(/\[([^|\]]+)\|([^\]]+)\]/g,'<ruby>$1<rt>$2</rt></ruby>')}
+function kana(s){return s.replace(/\[([^|\]]+)\|([^\]]+)\]/g,'$2')}
+function fmt(t){return Math.floor(t/60)+":"+String(t%60).padStart(2,"0")}
+
+/* YouTube player: plays one sentence segment, stops at its end, optional loop */
+let player=null, ready=false, seg=null, loop=false, loopBtn=null, pending=null;
+window.onYouTubeIframeAPIReady=function(){
+  player=new YT.Player("yt",{videoId:VID,playerVars:{playsinline:1,rel:0,modestbranding:1,cc_load_policy:0},
+    events:{onReady:()=>{ready=true;if(pending){const p=pending;pending=null;playSeg(p.it,p.btn,p.lp)}},
+      onStateChange:e=>{if(e.data===YT.PlayerState.ENDED&&seg&&loop){setTimeout(()=>start(seg),600)}}}});
+};
+function start(s){
+  player.loadVideoById({videoId:s.vid,startSeconds:Math.max(0,s.t-0.3),endSeconds:s.t+s.len+0.5});
+  player.setPlaybackRate(parseFloat(document.getElementById("speed").value));
+}
+function playSeg(it,btn,lp){
+  if(!ready){pending={it,btn,lp};return}
+  seg={vid:it.vid||VID,t:it.t,len:it.len};
+  loop=!!lp;
+  document.querySelectorAll(".loop").forEach(b=>{b.classList.remove("on");b.setAttribute("aria-pressed","false")});
+  if(loop&&btn){btn.classList.add("on");btn.setAttribute("aria-pressed","true")}
+  document.getElementById("now").innerHTML='재생 중: <span class="now">'+(it.who||"")+' · '+fmt(it.t)+'</span>'+(loop?' (반복)':'');
+  start(seg);
+  try{window.scrollTo({top:0,behavior:"smooth"})}catch(e){}
+}
+document.getElementById("speed").onchange=e=>{try{player&&player.setPlaybackRate(parseFloat(e.target.value))}catch(_){}};
+
+let jaVoice=null;
+function pickVoice(){try{const v=speechSynthesis.getVoices();jaVoice=v.find(x=>/^ja/i.test(x.lang))||null;}catch(e){}}
+try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}catch(e){}
+function say(text,rate,btn){
+  try{
+    if(!("speechSynthesis" in window)){document.getElementById("ttsWarn").hidden=false;return}
+    try{player&&player.pauseVideo()}catch(_){}
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);u.lang="ja-JP";u.rate=rate;if(jaVoice)u.voice=jaVoice;
+    if(btn){btn.classList.add("playing");u.onend=u.onerror=()=>btn.classList.remove("playing")}
+    speechSynthesis.speak(u);
+    setTimeout(()=>{if(!jaVoice){pickVoice();if(!jaVoice)document.getElementById("ttsWarn").hidden=false}},800);
+  }catch(e){document.getElementById("ttsWarn").hidden=false}
+}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+
+function render(di){
+  const box=document.getElementById("days");box.innerHTML="";
+  DAYS[di].items.forEach((it,i)=>{
+    const id=`d${di}s${i}`;
+    const c=document.createElement("article");c.className="card";
+    c.innerHTML=`
+      <div class="meta"><span class="who">${it.who}</span><span>${it.src||"ILLIT めざましインタビュー"} · ${fmt(it.t)}부터 약 ${it.len}초</span></div>
+      <p class="jp" lang="ja">${rubyHTML(it.jp)}</p>
+      <p class="pron">${it.pron}</p>
+      <p class="ko">${it.ko}</p>
+      <div class="btns">
+        <button class="btn" data-a="seg">▶ 구간 재생</button>
+        <button class="btn ghost loop" data-a="loop" aria-pressed="false">🔁 반복</button>
+        <button class="btn ghost" data-a="slow">🔊 느리게</button>
+        <button class="btn ghost" data-a="norm">🔊 보통</button>
+      </div>
+      <h3>단어 · 눌러서 듣기</h3>
+      <div class="words">${it.words.map(w=>`<button class="w" data-w="${w[1]}"><span class="k" lang="ja">${w[0]}</span><span class="r">${w[1]}</span><span class="m">${w[2]}</span></button>`).join("")}</div>
+      <h3>핵심 포인트</h3>
+      <ul class="pts">${it.pts.map(p=>`<li>${p[0]}</li>`).join("")}</ul>
+      <div class="tip">${it.tip}</div>
+      <label class="done"><input type="checkbox" id="${id}"> 영상과 같이 3번 따라 말했어요</label>`;
+    const text=kana(it.jp);
+    c.querySelector('[data-a="seg"]').onclick=()=>playSeg(it,null,false);
+    c.querySelector('[data-a="loop"]').onclick=e=>{const b=e.currentTarget;if(b.classList.contains("on")){loop=false;b.classList.remove("on");b.setAttribute("aria-pressed","false");document.getElementById("now").textContent="반복 꺼짐"}else playSeg(it,b,true)};
+    c.querySelector('[data-a="slow"]').onclick=e=>say(text,0.7,e.currentTarget);
+    c.querySelector('[data-a="norm"]').onclick=e=>say(text,1,e.currentTarget);
+    c.querySelectorAll(".w").forEach(b=>b.onclick=()=>say(b.dataset.w,0.8,b));
+    const cb=c.querySelector("input");cb.checked=store(id)==="1";cb.onchange=()=>store(id,cb.checked?"1":"0");
+    box.appendChild(c);
+  });
+  document.querySelectorAll("#tabs button").forEach((b,i)=>b.setAttribute("aria-pressed",i===di?"true":"false"));
+}
+const tabs=document.getElementById("tabs");
+DAYS.forEach((d,i)=>{const b=document.createElement("button");b.textContent=d.label;b.onclick=()=>render(i);tabs.appendChild(b)});
+render(DAYS.length-1);
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
+</body>
+</html>
