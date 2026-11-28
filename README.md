@@ -4,3 +4,5 @@
 
 - `index.html`: 페이지
 - `days.js`: 날짜별 문장 데이터
+- `kanji.html`: 상용한자 2136 하루 한 편(영상 + 단어 테스트)
+- `kanji-days.js`: 일차별 한자·단어 데이터

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>상용한자 하루 한 편</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+JP:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#fbf8fc; --surface:#ffffff; --fg:#2a2433; --muted:#6f6680; --line:#e8e0ef;
+  --accent:#b0478a; --accent-soft:#f6e6f0; --accent-fg:#ffffff;
+  --ok:#2f7d4f; --ok-soft:#e3f3e9; --bad:#b23a3a; --bad-soft:#f9e4e4;
+  --jp:"Zen Maru Gothic","Noto Sans JP",system-ui,sans-serif;
+  --kr:"Noto Sans KR",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17131c; --surface:#211b28; --fg:#efe9f5; --muted:#a99fb8; --line:#352d40;
+  --accent:#e58bc0; --accent-soft:#3a2333; --accent-fg:#1b1220;
+  --ok:#7fd3a0; --ok-soft:#1b3326; --bad:#f09a9a; --bad-soft:#3a1f22; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17131c; --surface:#211b28; --fg:#efe9f5; --muted:#a99fb8; --line:#352d40;
+  --accent:#e58bc0; --accent-soft:#3a2333; --accent-fg:#1b1220;
+  --ok:#7fd3a0; --ok-soft:#1b3326; --bad:#f09a9a; --bad-soft:#3a1f22; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--kr);font-size:15px;line-height:1.65}
+.wrap{max-width:720px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-left,0px)) 64px;display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--jp);font-size:1.6rem;margin:0}
+header p{margin:.2rem 0 0;color:var(--muted)}
+header nav{margin-top:.4rem;font-size:.9rem}
+a{color:var(--accent)}
+.daybar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.daybar select{font:inherit;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:6px 14px;border-radius:999px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.vid{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.muted{color:var(--muted);font-size:.9rem}
+.btn{font:inherit;font-size:.92rem;border-radius:10px;padding:8px 14px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-fg)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:focus-visible,.tabs button:focus-visible,.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+.k{display:flex;gap:12px;align-items:flex-start}
+.k .big{font-family:var(--jp);font-size:2.4rem;line-height:1;min-width:2.6rem;text-align:center;color:var(--accent)}
+.k .hun{font-weight:700;margin-bottom:4px}
+.k ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
+.k li{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.jw{font-family:var(--jp);font-size:1.1rem;cursor:pointer;background:none;border:0;padding:0;color:inherit}
+ruby rt{font-family:"Noto Sans JP",sans-serif;font-size:.55em;color:var(--accent)}
+.q{font-family:var(--jp);font-size:2rem;text-align:center;margin:.4rem 0;line-height:2.2}
+.qhint{text-align:center;color:var(--muted)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:420px){.opts{grid-template-columns:1fr}}
+.opt{font:inherit;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;min-height:48px}
+.opt.jpo{font-family:var(--jp);font-size:1.15rem}
+.opt.ok{background:var(--ok-soft);border-color:var(--ok)}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad)}
+.opt[disabled]{cursor:default}
+.exp{border-left:3px solid var(--accent);padding:4px 0 4px 12px}
+.exp .jpx{font-family:var(--jp);font-size:1.3rem;line-height:2.2}
+.prog{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.score{font-family:var(--jp);font-size:2.2rem;text-align:center;margin:0}
+.wrong li{margin:4px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>상용한자 하루 한 편</h1>
+    <p id="sub">영상 보기 → 단어 훑기 → 테스트</p>
+    <nav><a href="./">← 오늘의 일본어 문장</a></nav>
+  </header>
+
+  <div class="daybar">
+    <label for="daySel" class="muted">일차</label>
+    <select id="daySel"></select>
+    <span id="dayDate" class="muted"></span>
+  </div>
+
+  <section class="card" id="videoCard">
+    <div class="vid"><iframe id="yt" title="상용한자 영상" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
+    <div class="row">
+      <span class="muted" id="vidInfo"></span>
+      <a id="ytLink" target="_blank" rel="noopener">유튜브에서 열기</a>
+    </div>
+  </section>
+
+  <div class="tabs" role="group" aria-label="보기">
+    <button data-tab="words" aria-pressed="true">단어 보기</button>
+    <button data-tab="test" aria-pressed="false">오늘 테스트</button>
+    <button data-tab="review" aria-pressed="false">누적 복습</button>
+  </div>
+
+  <section id="words" class="kgrid"></section>
+  <section id="test" class="card" hidden></section>
+</div>
+
+<script src="kanji-days.js"></script>
+<script>
+(function(){
+  var store={get:function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
+             set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function ruby(w,r){return /[一-鿿々〆]/.test(w)?'<ruby>'+esc(w)+'<rt>'+esc(r)+'</rt></ruby>':esc(w)}
+  function seoulToday(){var d=new Date(Date.now()+9*3600e3);return d.toISOString().slice(0,10)}
+  function speak(t){try{var u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+
+  var today=seoulToday();
+  var sel=document.getElementById('daySel');
+  var todayDay=KDAYS[0];
+  KDAYS.forEach(function(d){if(d.date<=today)todayDay=d});
+  KDAYS.forEach(function(d){
+    var o=document.createElement('option');o.value=d.day;
+    o.textContent=d.day+'일차 ('+d.from+'~'+d.to+'번)'+(d===todayDay?' · 오늘':'');
+    sel.appendChild(o)});
+  var q=new URLSearchParams(location.search).get('day');
+  var cur=KDAYS.filter(function(d){return String(d.day)===q})[0]||todayDay;
+  sel.value=cur.day;
+  sel.onchange=function(){cur=KDAYS.filter(function(d){return d.day==sel.value})[0];render()};
+
+  var tab='words';
+  document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){
+    tab=b.dataset.tab;document.querySelectorAll('.tabs button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});show()}});
+
+  function render(){
+    document.getElementById('dayDate').textContent=cur.date+(cur.date>today?' 예정':'');
+    document.getElementById('yt').src='https://www.youtube-nocookie.com/embed/'+cur.vid+'?rel=0';
+    document.getElementById('ytLink').href='https://www.youtube.com/watch?v='+cur.vid+'&list=PLd8wQ93QZ1O4';
+    var best=store.get('kbest-'+cur.day);
+    document.getElementById('vidInfo').textContent=cur.day+'일차 · 한자 '+cur.items.length+'자 · 단어 출처: '+cur.src+(best!=null?' · 최고 점수 '+best+'%':'');
+    var h='';
+    cur.items.forEach(function(it,i){
+      h+='<div class="card k"><div class="big">'+esc(it.k)+'</div><div><div class="hun">'+(cur.from+i)+'. '+esc(it.h)+'</div><ul>';
+      it.w.forEach(function(w){h+='<li><button class="jw" data-say="'+esc(w[1])+'" title="소리 듣기">'+ruby(w[0],w[1])+'</button><span class="muted">'+esc(w[2])+'</span></li>'});
+      h+='</ul></div></div>'});
+    document.getElementById('words').innerHTML=h;
+    document.querySelectorAll('.jw').forEach(function(b){b.onclick=function(){speak(b.dataset.say)}});
+    show();
+  }
+  function show(){
+    document.getElementById('words').hidden=tab!=='words';
+    document.getElementById('test').hidden=tab==='words';
+    if(tab==='test')startTest(cur.items,'kbest-'+cur.day,12);
+    if(tab==='review'){var pool=[];KDAYS.forEach(function(d){if(d.day<=cur.day)pool=pool.concat(d.items)});startTest(pool,null,15)}
+  }
+
+  // 문제 유형: read(한자→읽기), mean(단어→뜻), pick(읽기+뜻→한자 단어)
+  function makeQs(items,n){
+    var all=[];items.forEach(function(it){it.w.forEach(function(w){all.push({w:w,k:it.k})})});
+    var seen={};all=all.filter(function(x){if(seen[x.w[0]+x.w[1]])return false;return seen[x.w[0]+x.w[1]]=1});
+    var withK=all.filter(function(x){return /[一-鿿]/.test(x.w[0])});
+    var types=['read','mean','pick'];
+    return shuffle(withK).slice(0,n).map(function(x,i){
+      var t=types[i%3];var idx=t==='mean'?2:(t==='read'?1:0);
+      var others=shuffle(all.filter(function(y){return y.w[idx]!==x.w[idx]&&y.w[0]!==x.w[0]}));
+      var used={};used[x.w[idx]]=1;var ds=[];
+      others.forEach(function(y){if(ds.length<3&&!used[y.w[idx]]){used[y.w[idx]]=1;ds.push(y)}});
+      return {t:t,x:x,opts:shuffle([x].concat(ds)),idx:idx}});
+  }
+  function startTest(items,key,n){
+    var box=document.getElementById('test');
+    var qs=makeQs(items,n),i=0,right=0,wrong=[];
+    function step(){
+      if(i>=qs.length)return done();
+      var Q=qs[i],w=Q.x.w,h='<div class="prog"><i style="width:'+(i/qs.length*100)+'%"></i></div><div class="muted">'+(i+1)+' / '+qs.length+'</div>';
+      if(Q.t==='read')h+='<p class="qhint">이 단어는 어떻게 읽을까요?</p><p class="q">'+esc(w[0])+'</p>';
+      if(Q.t==='mean')h+='<p class="qhint">이 단어의 뜻은?</p><p class="q">'+ruby(w[0],w[1])+'</p>';
+      if(Q.t==='pick')h+='<p class="qhint">「'+esc(w[2])+'」 — 읽기가 <b>'+esc(w[1])+'</b>인 단어는?</p>';
+      h+='<div class="opts">';
+      Q.opts.forEach(function(o,j){var txt=o.w[Q.idx];h+='<button class="opt'+(Q.idx<2?' jpo':'')+'" data-j="'+j+'">'+esc(txt)+'</button>'});
+      h+='</div><div id="after"></div>';
+      box.innerHTML=h;
+      box.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){
+        var o=Q.opts[b.dataset.j],ok=o===Q.x;if(ok)right++;else wrong.push(Q.x);
+        box.querySelectorAll('.opt').forEach(function(c){var oo=Q.opts[c.dataset.j];c.disabled=true;
+          if(oo===Q.x)c.classList.add('ok');else if(c===b)c.classList.add('bad');
+          if(Q.t==='pick')c.innerHTML=ruby(oo.w[0],oo.w[1]);
+          if(Q.t==='read')c.innerHTML=esc(oo.w[1])+' <span class="muted" style="font-size:.8rem">'+esc(oo.w[2])+'</span>'});
+        speak(w[1]);
+        document.getElementById('after').innerHTML='<div class="exp"><div>'+(ok?'정답이에요!':'아쉬워요. 정답은 이거예요.')+'</div><div class="jpx">'+ruby(w[0],w[1])+'</div><div>'+esc(w[2])+' · 한자 「'+esc(Q.x.k)+'」</div></div><div class="row" style="margin-top:10px"><span></span><button class="btn" id="nx">'+(i+1<qs.length?'다음':'결과 보기')+'</button></div>';
+        document.getElementById('nx').onclick=function(){i++;step()};document.getElementById('nx').focus()}});
+    }
+    function done(){
+      var pct=Math.round(right/qs.length*100);
+      if(key){var b=store.get(key);if(b==null||pct>b)store.set(key,pct)}
+      var h='<p class="score">'+right+' / '+qs.length+'</p><p class="qhint">'+(pct>=80?'잘했어요! 내일 영상으로 넘어가도 좋아요.':'틀린 단어를 한 번 더 읽어 보고 다시 풀어 봐요.')+'</p>';
+      if(wrong.length){h+='<ul class="wrong">';wrong.forEach(function(x){h+='<li><span class="jpx" style="font-family:var(--jp);font-size:1.15rem">'+ruby(x.w[0],x.w[1])+'</span> <span class="muted">'+esc(x.w[2])+'</span></li>'});h+='</ul>'}
+      h+='<div class="row"><button class="btn" id="again">새 문제로 다시</button>'+(wrong.length?'<button class="btn ghost" id="wrongOnly">틀린 것만 다시</button>':'')+'</div>';
+      box.innerHTML=h;
+      document.getElementById('again').onclick=function(){startTest(items,key,n)};
+      var wo=document.getElementById('wrongOnly');
+      if(wo)wo.onclick=function(){var ks={};wrong.forEach(function(x){ks[x.w[0]]=1});
+        startTest([{k:'',w:wrong.map(function(x){return x.w}).concat(items.reduce(function(a,it){return a.concat(it.w)},[]).filter(function(w){return !ks[w[0]]}).slice(0,12))}].map(function(it){return it}),null,wrong.length)};
+      if(key){var vi=document.getElementById('vidInfo');vi.textContent=vi.textContent.replace(/ · 최고 점수 \d+%/,'')+' · 최고 점수 '+store.get(key)+'%'}
+    }
+    step();
+  }
+  render();
+})();
+</script>
+</body>
+</html>
